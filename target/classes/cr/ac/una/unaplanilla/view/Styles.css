@@ -1,0 +1,25 @@
+/****************************************/
+/*             All Project CSS         */
+/***************************************/
+/*
+*{
+    -fx-font-family:Roboto-Regular;
+    -fx-font-size: 14px;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+}
+
+ */
+
+
+/****************************************/
+/*             CSS LogInView           */
+/***************************************/
+
+.stackpane{
+    -fx-background-color: #f4f4f4;
+}
+.btnSalir{
+}
+.btnIngresat{
+}
