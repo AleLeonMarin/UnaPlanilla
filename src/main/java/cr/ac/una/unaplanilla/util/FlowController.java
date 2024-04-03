@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cr.ac.una.unaplanilla.util;
 
 import cr.ac.una.unaplanilla.App;
-import cr.ac.una.unaplanilla.controller.Controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -14,14 +8,15 @@ import java.util.logging.Level;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
+import cr.ac.una.unaplanilla.controller.Controller;
+import io.github.palexdev.materialfx.css.themes.MFXThemeManager;
+import io.github.palexdev.materialfx.css.themes.Themes;
 
 public class FlowController {
 
@@ -72,7 +67,8 @@ public class FlowController {
                         loaders.put(name, loader);
                     } catch (Exception ex) {
                         loader = null;
-                        java.util.logging.Logger.getLogger(FlowController.class.getName()).log(Level.SEVERE, "Creando loader [" + name + "].", ex);
+                        java.util.logging.Logger.getLogger(FlowController.class.getName()).log(Level.SEVERE,
+                                "Creando loader [" + name + "].", ex);
                     }
                 }
             }
@@ -82,10 +78,13 @@ public class FlowController {
 
     public void goMain() {
         try {
-            this.mainStage.setScene(new Scene(FXMLLoader.load(App.class.getResource("view/PrincipalView.fxml"), this.idioma)));
+            this.mainStage.setScene(
+                    new Scene(FXMLLoader.load(App.class.getResource("view/PrincipalView.fxml"), this.idioma)));
+            MFXThemeManager.addOn(this.mainStage.getScene(), Themes.DEFAULT, Themes.LEGACY);
             this.mainStage.show();
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(FlowController.class.getName()).log(Level.SEVERE, "Error inicializando la vista base.", ex);
+            java.util.logging.Logger.getLogger(FlowController.class.getName()).log(Level.SEVERE,
+                    "Error inicializando la vista base.", ex);
         }
     }
 
@@ -109,8 +108,9 @@ public class FlowController {
         }
         switch (location) {
             case "Center":
-                ((VBox) ((BorderPane) stage.getScene().getRoot()).getCenter()).getChildren().clear();
-                ((VBox) ((BorderPane) stage.getScene().getRoot()).getCenter()).getChildren().add(loader.getRoot());
+                VBox vBox = ((VBox) ((BorderPane) stage.getScene().getRoot()).getCenter());
+                vBox.getChildren().clear();
+                vBox.getChildren().add(loader.getRoot());
                 break;
             case "Top":
                 break;
@@ -130,6 +130,8 @@ public class FlowController {
         Controller controller = loader.getController();
         controller.setStage(stage);
         stage.getScene().setRoot(loader.getRoot());
+        MFXThemeManager.addOn(stage.getScene(), Themes.DEFAULT, Themes.LEGACY);
+
     }
 
     public void goViewInWindow(String viewName) {
@@ -137,8 +139,8 @@ public class FlowController {
         Controller controller = loader.getController();
         controller.initialize();
         Stage stage = new Stage();
-        //stage.getIcons().add(new Image("cr/ac/una/unaplanilla/resources/Usuario-48.png"));
-        stage.setTitle("Cooperativa UNA-KIDS");
+        // stage.getIcons().add(new
+        // Image("cr/ac/una/unaplanillaj21/resources/LogoUNArojo.png"));
         stage.setOnHidden((WindowEvent event) -> {
             controller.getStage().getScene().setRoot(new Pane());
             controller.setStage(null);
@@ -146,10 +148,10 @@ public class FlowController {
         controller.setStage(stage);
         Parent root = loader.getRoot();
         Scene scene = new Scene(root);
+        MFXThemeManager.addOn(scene, Themes.DEFAULT, Themes.LEGACY);
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.show();
-
     }
 
     public void goViewInWindowModal(String viewName, Stage parentStage, Boolean resizable) {
@@ -157,8 +159,8 @@ public class FlowController {
         Controller controller = loader.getController();
         controller.initialize();
         Stage stage = new Stage();
-        //stage.getIcons().add(new Image("cr/ac/una/unaplanilla/resources/Usuario-48.png"));
-        stage.setTitle("UNA PLANILLA");
+        // stage.getIcons().add(new
+        // Image("cr/ac/una/unaplanillaj21/resources/LogoUNArojo.png"));
         stage.setResizable(resizable);
         stage.setOnHidden((WindowEvent event) -> {
             controller.getStage().getScene().setRoot(new Pane());
@@ -167,17 +169,19 @@ public class FlowController {
         controller.setStage(stage);
         Parent root = loader.getRoot();
         Scene scene = new Scene(root);
+        MFXThemeManager.addOn(scene, Themes.DEFAULT, Themes.LEGACY);
         stage.setScene(scene);
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(parentStage);
         stage.centerOnScreen();
         stage.showAndWait();
+
     }
-    
+
     public Controller getController(String viewName) {
         return getLoader(viewName).getController();
     }
-    
+
     public void limpiarLoader(String view) {
         this.loaders.remove(view);
     }
@@ -185,7 +189,7 @@ public class FlowController {
     public static void setIdioma(ResourceBundle idioma) {
         FlowController.idioma = idioma;
     }
-    
+
     public void initialize() {
         this.loaders.clear();
     }
