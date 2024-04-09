@@ -50,7 +50,7 @@ public class LogInController  extends Controller implements Initializable {
             } else if (psfPassword.getText() == null || psfPassword.getText().isBlank())
                 new Mensaje().showModal(Alert.AlertType.ERROR, "Validacion de  contraseña", (Stage) btnIngresar.getScene().getWindow(), "Debe ingresar una contraseña");
             else{
-                System.out.println("ingreso exitoso");
+                FlowController.getInstance().goMain();
             }
         } catch (Exception ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, "Error al ingreso del Sistema", ex);
