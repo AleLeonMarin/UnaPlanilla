@@ -13,4 +13,4 @@ services:
        - ORACLE_USER=una
        - ORACLE_PASSWORD=una
     volumes:
-      -./SrciptUnaPlanilla.sql:C:\Users\aletr\OneDrive\Documents\Toad Data Modeler\GeneratedScripts.sql
+      -./SrciptUnaPlanilla.sql:C:\Users\aletr\OneDrive\Documents\Universidad\SQLS\ScriptUnaPlanilla.sql
