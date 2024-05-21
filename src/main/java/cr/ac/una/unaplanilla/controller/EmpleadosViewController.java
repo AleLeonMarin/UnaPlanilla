@@ -6,9 +6,7 @@ package cr.ac.una.unaplanilla.controller;
 
 import cr.ac.una.unaplanilla.model.EmpleadoDto;
 import cr.ac.una.unaplanilla.service.EmpleadoService;
-import cr.ac.una.unaplanilla.util.AppContext;
 import cr.ac.una.unaplanilla.util.BindingUtils;
-import cr.ac.una.unaplanilla.util.FlowController;
 import cr.ac.una.unaplanilla.util.Formato;
 import cr.ac.una.unaplanilla.util.Mensaje;
 import cr.ac.una.unaplanilla.util.Respuesta;
@@ -34,7 +32,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -96,6 +93,8 @@ public class EmpleadosViewController extends Controller implements Initializable
         txtUsuario.delegateSetTextFormatter(Formato.getInstance().letrasFormat(15));
         txtClave.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(8));
         empleadoDto = new EmpleadoDto();
+        nuevoEmpleado();
+        validarRequeridos();
     }
 
     @Override
@@ -113,8 +112,7 @@ public class EmpleadosViewController extends Controller implements Initializable
     }
 
     private void bindEmpleado(Boolean nuevo) {
-        if (!nuevo)
-        {
+        if (!nuevo) {
             txtId.textProperty().bind(empleadoDto.id);
         }
         txtCedula.textProperty().bindBidirectional(empleadoDto.cedula);
@@ -153,13 +151,11 @@ public class EmpleadosViewController extends Controller implements Initializable
     }
 
     private void validarAdministrador() {
-        if (chkAdministrador.isSelected())
-        {
+        if (chkAdministrador.isSelected()) {
             requeridos.addAll(Arrays.asList(txtUsuario, txtClave));
             txtUsuario.setDisable(false);
             txtClave.setDisable(false);
-        } else
-        {
+        } else {
             requeridos.removeAll(Arrays.asList(txtUsuario, txtClave));
             txtUsuario.clear();
             txtUsuario.setDisable(true);
@@ -171,103 +167,144 @@ public class EmpleadosViewController extends Controller implements Initializable
     public String validarRequeridos() {
         Boolean validos = true;
         String invalidos = "";
-        for (Node node : requeridos)
-        {
-            if (node instanceof MFXTextField && (((MFXTextField) node).getText() == null || ((MFXTextField) node).getText().isBlank()))
-            {
-                if (validos)
-                {
+        for (Node node : requeridos) {
+            if (node instanceof MFXTextField
+                    && (((MFXTextField) node).getText() == null || ((MFXTextField) node).getText().isBlank())) {
+                if (validos) {
                     invalidos += ((MFXTextField) node).getFloatingText();
-                } else
-                {
+                } else {
                     invalidos += "," + ((MFXTextField) node).getFloatingText();
                 }
                 validos = false;
-            } else if (node instanceof MFXPasswordField && (((MFXPasswordField) node).getText() == null || ((MFXPasswordField) node).getText().isBlank()))
-            {
-                if (validos)
-                {
+            } else if (node instanceof MFXPasswordField
+                    && (((MFXPasswordField) node).getText() == null || ((MFXPasswordField) node).getText().isBlank())) {
+                if (validos) {
                     invalidos += ((MFXPasswordField) node).getFloatingText();
-                } else
-                {
+                } else {
                     invalidos += "," + ((MFXPasswordField) node).getFloatingText();
                 }
                 validos = false;
-            } else if (node instanceof MFXDatePicker && ((MFXDatePicker) node).getValue() == null)
-            {
-                if (validos)
-                {
+            } else if (node instanceof MFXDatePicker && ((MFXDatePicker) node).getValue() == null) {
+                if (validos) {
                     invalidos += ((MFXDatePicker) node).getFloatingText();
-                } else
-                {
+                } else {
                     invalidos += "," + ((MFXDatePicker) node).getFloatingText();
                 }
                 validos = false;
-            } else if (node instanceof MFXComboBox && ((MFXComboBox) node).getSelectionModel().getSelectedIndex() < 0)
-            {
-                if (validos)
-                {
+            } else if (node instanceof MFXComboBox && ((MFXComboBox) node).getSelectionModel().getSelectedIndex() < 0) {
+                if (validos) {
                     invalidos += ((MFXComboBox) node).getFloatingText();
-                } else
-                {
+                } else {
                     invalidos += "," + ((MFXComboBox) node).getFloatingText();
                 }
                 validos = false;
             }
         }
-        if (validos)
-        {
+        if (validos) {
             return "";
-        } else
-        {
+        } else {
             return "Campos requeridos o con problemas de formato [" + invalidos + "].";
         }
     }
 
     @FXML
     private void onActionBtnNuevo(ActionEvent event) {
-        if(new Mensaje().showConfirmation("Limpiar Empleado", getStage(), "¿Esta seguro que desea limipiar el registro?")){
-        nuevoEmpleado();
+        if (new Mensaje().showConfirmation("Limpiar Empleado", getStage(),
+                "¿Esta seguro que desea limipiar el registro?")) {
+            nuevoEmpleado();
         }
     }
 
     @FXML
     private void onActionBtnGuardar(ActionEvent event) {
+
+        try {
+            String invalidos = validarRequeridos();
+
+            if (!invalidos.isBlank()) {
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Empleado", getStage(), invalidos);
+
+            } else {
+                EmpleadoService empleadoService = new EmpleadoService();
+                Respuesta respuesta = empleadoService.guardarEmpleado(this.empleadoDto);
+
+                if (respuesta.getEstado()) {
+                    unbindEmpleado();
+                    this.empleadoDto = (EmpleadoDto) respuesta.getResultado("Empleado");
+                    bindEmpleado(false);
+                    new Mensaje().showModal(Alert.AlertType.INFORMATION, "Guardar Empleado", getStage(),
+                            "Empleado guardado correctamente.");
+                } else {
+                    new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Empleado", getStage(),
+                            respuesta.getMensaje());
+                }
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(EmpleadosViewController.class.getName()).log(Level.SEVERE, "Error guardando el empleado.",
+                    ex);
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Empleado", getStage(),
+                    "Ocurrio un error guardando el empleado.");
+        }
     }
 
     @FXML
     private void onActionBtnEliminar(ActionEvent event) {
+
+        try {
+
+            if (this.empleadoDto.getId() == null) {
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Empleado", getStage(),
+                        "Favor conslutar el empleado a eliminar");
+
+            } else {
+                EmpleadoService empleadoService = new EmpleadoService();
+                Respuesta respuesta = empleadoService.eliminarEmpleado(this.empleadoDto.getId());
+
+                if (respuesta.getEstado()) {
+                    nuevoEmpleado();
+                    new Mensaje().showModal(Alert.AlertType.INFORMATION, "Eliminar Empleado", getStage(),
+                            "Empleado se eliminó correctamente.");
+                } else {
+                    new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Empleado", getStage(),
+                            respuesta.getMensaje());
+                }
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(EmpleadosViewController.class.getName()).log(Level.SEVERE, "Error eliminando el empleado.",
+                    ex);
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Empleado", getStage(),
+                    "Ocurrio un error eliminando el empleado.");
+        }
     }
 
     @FXML
     private void onKeyPressedTxtId(KeyEvent event) {
-        if (event.getCode() == KeyCode.ENTER && !txtId.getText().isBlank())
-        {
+        if (event.getCode() == KeyCode.ENTER && !txtId.getText().isBlank()) {
             cargarEmpleado(Long.valueOf(txtId.getText()));
         }
     }
 
     private void cargarEmpleado(Long id) {
-        try
-        {
+        try {
             EmpleadoService empleadoService = new EmpleadoService();
             Respuesta respuesta = empleadoService.getEmpleado(id);
 
-            if (respuesta.getEstado())
-            {
+            if (respuesta.getEstado()) {
                 unbindEmpleado();
                 this.empleadoDto = (EmpleadoDto) respuesta.getResultado("Empleado");
                 bindEmpleado(false);
                 validarAdministrador();
                 validarRequeridos();
-            } else
-            {
+            } else {
                 new Mensaje().showModal(Alert.AlertType.ERROR, "Cargar Empleado", getStage(), respuesta.getMensaje());
             }
-        } catch (Exception ex)
-        {
-            Logger.getLogger(EmpleadosViewController.class.getName()).log(Level.SEVERE, "Error consultando el empleado.", ex);
-            new Mensaje().showModal(Alert.AlertType.ERROR, "Cargar Empleado", getStage(), "Ocurrio un error consultando el empleado.");
+        } catch (Exception ex) {
+            Logger.getLogger(EmpleadosViewController.class.getName()).log(Level.SEVERE,
+                    "Error consultando el empleado.", ex);
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Cargar Empleado", getStage(),
+                    "Ocurrio un error consultando el empleado.");
         }
     }
 

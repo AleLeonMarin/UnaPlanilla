@@ -47,6 +47,7 @@ public class EmpleadoDto implements Serializable {
 
     public EmpleadoDto(Empleado empleado) {
         this();
+        this.id.set(empleado.getId().toString());
         this.nombre.set(empleado.getNombre());
         this.primerApellido.set(empleado.getPrimerApellido());
         this.segundoApellido.set(empleado.getSegundoApellido());

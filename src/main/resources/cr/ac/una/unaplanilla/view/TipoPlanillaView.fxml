@@ -1,11 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXCheckbox?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.unaplanilla.controller.TipoPlanillaViewController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" styleClass="jfx-panel-fondo" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.unaplanilla.controller.TipoPlanillaViewController">
    <children>
-      <MFXButton layoutX="209.0" layoutY="161.0" text=":0" />
+      <AnchorPane layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label styleClass="jfx-titulo-label" text="Control Tipo Planilla" VBox.vgrow="ALWAYS" />
+                  <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="420.0" prefWidth="760.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="100.0" tabMaxWidth="200.0" VBox.vgrow="ALWAYS">
+                    <tabs>
+                      <Tab text="Tipo Planilla">
+                           <content>
+                              <HBox alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="383.0" prefWidth="693.0" spacing="60.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <MFXTextField fx:id="txfId" floatingText="Id" onKeyPressed="#onKeyPressedTxtId" prefWidth="180.0">
+                                             <VBox.margin>
+                                                <Insets left="20.0" top="30.0" />
+                                             </VBox.margin>
+                                             <styleClass>
+                                                <String fx:value="jfx-txfs-tipo-planilla" />
+                                                <String fx:value="jfx-txfs-tipo-planilla-container" />
+                                             </styleClass>
+                                          </MFXTextField>
+                                          <MFXTextField fx:id="txfCodigo" floatingText="Codigo" prefWidth="180.0">
+                                             <VBox.margin>
+                                                <Insets left="20.0" />
+                                             </VBox.margin>
+                                             <styleClass>
+                                                <String fx:value="jfx-txfs-tipo-planilla" />
+                                                <String fx:value="jfx-txfs-tipo-planilla-container" />
+                                             </styleClass>
+                                          </MFXTextField>
+                                          <MFXTextField fx:id="txfDescripcion" floatingText="Descripcion" prefWidth="637.0">
+                                             <VBox.margin>
+                                                <Insets left="20.0" />
+                                             </VBox.margin>
+                                             <styleClass>
+                                                <String fx:value="jfx-txfs-tipo-planilla" />
+                                                <String fx:value="jfx-txfs-tipo-planilla-container" />
+                                             </styleClass>
+                                          </MFXTextField>
+                                          <MFXTextField fx:id="txfPlanillaXMes" floatingText="Planillas x mes" prefWidth="180.0">
+                                             <VBox.margin>
+                                                <Insets left="20.0" />
+                                             </VBox.margin>
+                                             <styleClass>
+                                                <String fx:value="jfx-txfs-tipo-planilla" />
+                                                <String fx:value="jfx-txfs-tipo-planilla-container" />
+                                             </styleClass>
+                                          </MFXTextField>
+                                       </children>
+                                    </VBox>
+                                    <MFXCheckbox fx:id="chkActivo" text="Activo">
+                                       <HBox.margin>
+                                          <Insets right="30.0" top="50.0" />
+                                       </HBox.margin>
+                                    </MFXCheckbox>
+                                 </children>
+                              </HBox>
+                           </content>
+                        </Tab>
+                      <Tab text="Inclusion Empleados" />
+                    </tabs>
+                  </TabPane>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="27.0" spacing="10.0">
+                     <children>
+                        <MFXButton fx:id="btnNuevo" onAction="#onActionBtnNuevo" prefHeight="50.0" prefWidth="150.0" styleClass="jfx-btn-Nuevo" text="Nuevo">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="jfx-btn-nuevo" />
+                           </graphic>
+                        </MFXButton>
+                        <MFXButton fx:id="btnBuscar" layoutX="325.0" layoutY="10.0" onAction="#onActionBtnBuscar" prefHeight="50.0" prefWidth="150.0" styleClass="jfx-btn-Buscar" text="Buscar">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </MFXButton>
+                        <MFXButton fx:id="btnEliminar" layoutX="405.0" layoutY="10.0" onAction="#onActionBtnEliminar" prefHeight="50.0" prefWidth="150.0" styleClass="jfx-btn-Eliminar" text="Eliminar">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </MFXButton>
+                        <MFXButton fx:id="btnGuardar" layoutX="485.0" layoutY="10.0" onAction="#onActionBtnGuardar" prefHeight="50.0" prefWidth="150.0" styleClass="jfx-btn-Guardar" text="Guardar">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </MFXButton>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>
