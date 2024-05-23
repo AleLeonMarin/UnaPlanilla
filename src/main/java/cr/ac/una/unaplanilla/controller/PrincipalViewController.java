@@ -8,10 +8,12 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
 public class PrincipalViewController extends Controller implements Initializable{
 
+   
     @FXML
     private MFXButton btnEmpleados;
 
@@ -20,7 +22,7 @@ public class PrincipalViewController extends Controller implements Initializable
 
     @FXML
     private MFXButton btnTiposPlanilla;
-
+    
     @FXML
     private BorderPane root;
 

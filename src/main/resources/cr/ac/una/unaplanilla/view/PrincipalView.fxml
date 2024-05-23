@@ -24,15 +24,15 @@
    <left>
       <VBox prefHeight="361.0" prefWidth="166.0" spacing="30.0" styleClass="jfx-contenedor-principal" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane prefHeight="52.0" prefWidth="166.0" styleClass="jfx-contenedor-principal">
+            <AnchorPane fx:id="lblName" prefHeight="89.0" prefWidth="138.0" styleClass="jfx-contenedor-principal">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../resources/user.png" />
                      </image>
                   </ImageView>
-                  <Label layoutX="83.0" layoutY="14.0" text="Label" />
-                  <Label layoutX="83.0" layoutY="37.0" text="Label" />
+                  <Label layoutX="80.0" layoutY="14.0" text="Label" />
+                  <Label layoutX="80.0" layoutY="50.0" text="Label" />
                </children>
             </AnchorPane>
             <MFXButton fx:id="btnEmpleados" buttonType="RAISED" maxWidth="1.7976931348623157E308" onAction="#onActionBtnEmpleados" prefHeight="70.0" prefWidth="166.0" styleClass="jfx-menuIngresar" text="Empleados" VBox.vgrow="ALWAYS" />

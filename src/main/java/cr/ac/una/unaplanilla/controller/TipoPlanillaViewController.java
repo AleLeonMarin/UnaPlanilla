@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cr.ac.una.unaplanilla.model.EmpleadoDto;
 import cr.ac.una.unaplanilla.model.TipoPlanillaDto;
 import cr.ac.una.unaplanilla.service.TipoPlanillaService;
 import cr.ac.una.unaplanilla.util.Formato;
@@ -19,11 +20,15 @@ import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.virtualizedfx.table.TableColumn;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -42,16 +47,25 @@ public class TipoPlanillaViewController extends Controller implements Initializa
     private MFXButton btnNuevo;
 
     @FXML
-    private MFXTextField txfCodigo;
+    private MFXCheckbox chkActivo       ;
 
     @FXML
-    private MFXTextField txfId;
+    private TabPane tPlanillas;
+
+    @FXML
+    private Tab tptInclusion;
+
+    @FXML
+    private Tab tptTipoPlanilla;
+
+    @FXML
+    private MFXTextField txfCodigo;
 
     @FXML
     private MFXTextField txfDescripcion;
 
     @FXML
-    private MFXCheckbox chkActivo;
+    private MFXTextField txfId;
 
     @FXML
     private MFXTextField txfPlanillaXMes;
@@ -67,23 +81,28 @@ public class TipoPlanillaViewController extends Controller implements Initializa
     @FXML
     void onActionBtnEliminar(ActionEvent event) {
         try {
-            if(tipoPlanillaDto.getId()== null){
-                new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Tipo Planilla", this.getStage(), "No se ha cargado un tipo de planilla para eliminar.");
-            }else{
+            if (tipoPlanillaDto.getId() == null) {
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Tipo Planilla", this.getStage(),
+                        "No se ha cargado un tipo de planilla para eliminar.");
+            } else {
 
                 TipoPlanillaService tipoPlanillaService = new TipoPlanillaService();
                 Respuesta respuesta = tipoPlanillaService.eliminarTipoPlanilla(tipoPlanillaDto.getId());
-                if(!respuesta.getEstado()){
-                    new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Tipo Planilla", this.getStage(), respuesta.getMensaje());
-            }else{
-                new Mensaje().showModal(Alert.AlertType.INFORMATION, "Eliminar Tipo Planilla", this.getStage(), "Tipo de Planilla eliminado correctamente.");
-                newPlanillaType();
+                if (!respuesta.getEstado()) {
+                    new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Tipo Planilla", this.getStage(),
+                            respuesta.getMensaje());
+                } else {
+                    new Mensaje().showModal(Alert.AlertType.INFORMATION, "Eliminar Tipo Planilla", this.getStage(),
+                            "Tipo de Planilla eliminado correctamente.");
+                    newPlanillaType();
+                }
             }
-        }
         } catch (Exception e) {
             // TODO: handle exception
-            Logger.getLogger(TipoPlanillaViewController.class.getName()).log(Level.SEVERE, "Error al eliminar el tipo de planilla.", e);
-            new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Tipo Planilla", this.getStage(), "Ocurrió un error al eliminar el tipo de planilla.");
+            Logger.getLogger(TipoPlanillaViewController.class.getName()).log(Level.SEVERE,
+                    "Error al eliminar el tipo de planilla.", e);
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Eliminar Tipo Planilla", this.getStage(),
+                    "Ocurrió un error al eliminar el tipo de planilla.");
         }
 
     }
@@ -93,23 +112,27 @@ public class TipoPlanillaViewController extends Controller implements Initializa
 
         try {
             String invalidos = validarRequeridos();
-            if(!invalidos.isBlank()){
+            if (!invalidos.isBlank()) {
                 new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", this.getStage(), invalidos);
-            }else{
+            } else {
                 TipoPlanillaService tipoPlanillaService = new TipoPlanillaService();
                 Respuesta respuesta = tipoPlanillaService.guardarTipoPlanilla(tipoPlanillaDto);
-                if(respuesta.getEstado()){
+                if (respuesta.getEstado()) {
                     unbindTipoPlanilla();
                     this.tipoPlanillaDto = (TipoPlanillaDto) respuesta.getResultado("TipoPlanilla");
                     bindTipoPlanilla(false);
-                    new Mensaje().showModal(Alert.AlertType.INFORMATION, "Guardar Tipo Planilla", this.getStage(), "Tipo de Planilla guardado correctamente.");
-            }else{
-                new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", getStage(), respuesta.getMensaje());
+                    new Mensaje().showModal(Alert.AlertType.INFORMATION, "Guardar Tipo Planilla", this.getStage(),
+                            "Tipo de Planilla guardado correctamente.");
+                } else {
+                    new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", getStage(),
+                            respuesta.getMensaje());
+                }
             }
-        }
         } catch (Exception e) {
-            Logger.getLogger(TipoPlanillaViewController.class.getName()).log(Level.SEVERE, "Error al guardar el tipo de planilla.", e);
-            new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", getStage(), "Ocurrió un error al guardar el tipo de planilla.");
+            Logger.getLogger(TipoPlanillaViewController.class.getName()).log(Level.SEVERE,
+                    "Error al guardar el tipo de planilla.", e);
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", getStage(),
+                    "Ocurrió un error al guardar el tipo de planilla.");
         }
 
     }
@@ -231,7 +254,7 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         txfId.delegateSetTextFormatter(Formato.getInstance().integerFormat());
         txfPlanillaXMes.delegateSetTextFormatter(Formato.getInstance().integerFormat());
         txfCodigo.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(4));
-        txfDescripcion.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(50));
+        txfDescripcion.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(40));
         tipoPlanillaDto = new TipoPlanillaDto();
         newPlanillaType();
         requiredNodesIndicate();

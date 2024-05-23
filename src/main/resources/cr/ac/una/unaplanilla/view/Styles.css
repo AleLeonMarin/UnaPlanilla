@@ -121,3 +121,15 @@
 		-fx-border-radius: 0;             /* Sin radio */
 	}
 	
+	.jfx-subtitulo-label{
+	    -fx-font-size: 17px;
+	    -fx-padding: 5 0 5 0;
+	    -fx-text-fill: -fx-base-color-titulos;
+	    -fx-font-weight: bold;
+	}
+
+	.jfx-separator{
+		-fx-background-color: -fx-base-color-focus;
+		-fx-border-color : -fx-base-color-focus;
+		-fx-border-width: 1px;
+	}
