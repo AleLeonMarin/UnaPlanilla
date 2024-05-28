@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="jfx-panel-fondo" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.unaplanilla.controller.BusquedaViewController">
+   <children>
+      <AnchorPane layoutX="159.0" layoutY="76.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <VBox layoutX="223.0" layoutY="90.0" prefHeight="200.0" prefWidth="100.0" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <children>
+                  <HBox prefHeight="526.0" prefWidth="740.0" spacing="40.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="446.0" prefWidth="304.0" spacing="40.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <MFXTextField fx:id="txfName" floatingText="Nombre" onKeyPressed="#onKeyPressedName" prefWidth="190.0" />
+                              <MFXTextField fx:id="txfLastName1" floatingText="Primer Apellido" onKeyPressed="#onKeyPressedLast1" prefWidth="190.0" />
+                              <MFXTextField fx:id="txfLastName2" floatingText="Segundo Apellido" onKeyPressed="#onKeyPressedLast2" prefWidth="190.0" />
+                              <MFXTextField fx:id="txfCedula" floatingText="Cedula" onKeyPressed="#onKeyPressedCed" prefWidth="190.0" />
+                           </children>
+                        </VBox>
+                        <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="jfx-separator" />
+                        <TableView fx:id="tbvResults" onMousePressed="#onMousePressedTbvResultados" prefHeight="446.0" prefWidth="350.0" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="97.0" prefWidth="740.0" spacing="30.0">
+                     <children>
+                        <MFXButton fx:id="btnFilter" onAction="#onActionBtnFilter" styleClass="jfx-mfx-btn-accept" text="Filtrar">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </MFXButton>
+                        <MFXButton fx:id="btnLoad" onAction="#onActionBtnLoad" styleClass="jfx-mfx-btn-load" text="Cargar">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                           </graphic>
+                        </MFXButton>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

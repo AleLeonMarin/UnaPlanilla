@@ -9,8 +9,12 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class EmpleadoService {
 
@@ -19,7 +23,7 @@ public class EmpleadoService {
 
     public Respuesta getUsuario(String usuario, String clave) {
         try {
-            Query qryUsuario = em.createNamedQuery("Empleado.findByUsuarioClave", Empleado.class);
+            Query qryUsuario = em.createNamedQuery("Empleado.findByUsuCla", Empleado.class);
             qryUsuario.setParameter("usuario", usuario);
             qryUsuario.setParameter("clave", clave);
             EmpleadoDto empleadoDto = new EmpleadoDto((Empleado) qryUsuario.getSingleResult());
@@ -59,6 +63,50 @@ public class EmpleadoService {
             return new Respuesta(false, "Error obteniendo el empleado.", "getEmpleado " + ex.getMessage());
         }
     }
+
+    public Respuesta filtrarEmpleados(String cedula, String nombre, String primerApellido, String segundoApellido) {
+        try {
+            StringBuilder jpql = new StringBuilder("SELECT e FROM Empleado e WHERE 1=1");
+
+            if (cedula != null && !cedula.trim().isEmpty()) {
+                jpql.append(" AND e.cedula LIKE :cedula");
+            }
+            if (nombre != null && !nombre.trim().isEmpty()) {
+                jpql.append(" AND e.nombre LIKE :nombre");
+            }
+            if (primerApellido != null && !primerApellido.trim().isEmpty()) {
+                jpql.append(" AND e.primerApellido LIKE :primerApellido");
+            }
+            if (segundoApellido != null && !segundoApellido.trim().isEmpty()) {
+                jpql.append(" AND e.segundoApellido LIKE :segundoApellido");
+            }
+
+            Query query = em.createQuery(jpql.toString(), Empleado.class);
+
+            if (cedula != null && !cedula.trim().isEmpty()) {
+                query.setParameter("cedula", "%" + cedula + "%");
+            }
+            if (nombre != null && !nombre.trim().isEmpty()) {
+                query.setParameter("nombre", "%" + nombre + "%");
+            }
+            if (primerApellido != null && !primerApellido.trim().isEmpty()) {
+                query.setParameter("primerApellido", "%" + primerApellido + "%");
+            }
+            if (segundoApellido != null && !segundoApellido.trim().isEmpty()) {
+                query.setParameter("segundoApellido", "%" + segundoApellido + "%");
+            }
+
+            List<Empleado> empleados = query.getResultList();
+            List<EmpleadoDto> empleadosDto = empleados.stream().map(EmpleadoDto::new).collect(Collectors.toList());
+
+            return new Respuesta(true, "", "", "Empleados", empleadosDto);
+        } catch (Exception ex) {
+            Logger.getLogger(EmpleadoService.class.getName()).log(Level.SEVERE, "Error filtrando los empleados", ex);
+            return new Respuesta(false, "Error filtrando los empleados.", "filtrarEmpleados " + ex.getMessage());
+        }
+    }
+
+
 
     public Respuesta guardarEmpleado(EmpleadoDto empleadoDto) {
         try {

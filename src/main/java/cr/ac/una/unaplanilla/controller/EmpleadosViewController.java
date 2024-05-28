@@ -7,6 +7,7 @@ package cr.ac.una.unaplanilla.controller;
 import cr.ac.una.unaplanilla.model.EmpleadoDto;
 import cr.ac.una.unaplanilla.service.EmpleadoService;
 import cr.ac.una.unaplanilla.util.BindingUtils;
+import cr.ac.una.unaplanilla.util.FlowController;
 import cr.ac.una.unaplanilla.util.Formato;
 import cr.ac.una.unaplanilla.util.Mensaje;
 import cr.ac.una.unaplanilla.util.Respuesta;
@@ -50,6 +51,8 @@ public class EmpleadosViewController extends Controller implements Initializable
     private MFXButton btnEliminar;
     @FXML
     private MFXButton btnGuardar;
+    @FXML
+    private MFXButton btnBuscar;
     @FXML
     private MFXRadioButton rdbMasculino;
     @FXML
@@ -280,6 +283,11 @@ public class EmpleadosViewController extends Controller implements Initializable
     }
 
     @FXML
+    private void onActionBtnBuscar(ActionEvent event) {
+        FlowController.getInstance().goViewInWindow("BusquedaView");
+    }
+
+    @FXML
     private void onKeyPressedTxtId(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER && !txtId.getText().isBlank()) {
             cargarEmpleado(Long.valueOf(txtId.getText()));
@@ -312,4 +320,12 @@ public class EmpleadosViewController extends Controller implements Initializable
     private void onActionCheckAdministrador(ActionEvent event) {
         validarAdministrador();
     }
+    
+    public void setEmpleado(EmpleadoDto empleado) {
+        unbindEmpleado();
+        this.empleadoDto = empleado;
+        bindEmpleado(false);
+        validarRequeridos();
+     }
+
 }

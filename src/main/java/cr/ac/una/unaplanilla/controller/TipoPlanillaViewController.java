@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import cr.ac.una.unaplanilla.model.EmpleadoDto;
 import cr.ac.una.unaplanilla.model.TipoPlanillaDto;
+import cr.ac.una.unaplanilla.service.EmpleadoService;
 import cr.ac.una.unaplanilla.service.TipoPlanillaService;
 import cr.ac.una.unaplanilla.util.Formato;
 import cr.ac.una.unaplanilla.util.Mensaje;
@@ -20,14 +20,18 @@ import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
-import io.github.palexdev.virtualizedfx.table.TableColumn;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -47,10 +51,22 @@ public class TipoPlanillaViewController extends Controller implements Initializa
     private MFXButton btnNuevo;
 
     @FXML
-    private MFXCheckbox chkActivo       ;
+    private MFXCheckbox chkActivo;
 
     @FXML
     private TabPane tPlanillas;
+
+    @FXML
+    private TableColumn<EmpleadoDto, String> tbcCodigo;
+
+    @FXML
+    private TableColumn<EmpleadoDto, Boolean> tbcEliminar;
+
+    @FXML
+    private TableColumn<EmpleadoDto, String> tbcNombre;
+
+    @FXML
+    private TableView<EmpleadoDto> tbvEmpleados;
 
     @FXML
     private Tab tptInclusion;
@@ -68,10 +84,45 @@ public class TipoPlanillaViewController extends Controller implements Initializa
     private MFXTextField txfId;
 
     @FXML
+    private MFXTextField txfIdEmpleado;
+
+    @FXML
+    private MFXTextField txfNombreEmpleado;
+
+    @FXML
     private MFXTextField txfPlanillaXMes;
 
     private TipoPlanillaDto tipoPlanillaDto;
+    private EmpleadoDto empleadoDto;
     List<Node> requiredNodes = new ArrayList<>();
+
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        txfId.delegateSetTextFormatter(Formato.getInstance().integerFormat());
+        txfPlanillaXMes.delegateSetTextFormatter(Formato.getInstance().integerFormat());
+        txfCodigo.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(4));
+        txfDescripcion.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(40));
+        tipoPlanillaDto = new TipoPlanillaDto();
+        empleadoDto = new EmpleadoDto();
+        newPlanillaType();
+        requiredNodesIndicate();
+    
+        tbcCodigo.setCellValueFactory(cd -> cd.getValue().id);
+        tbcNombre.setCellValueFactory(cd -> cd.getValue().nombre);
+        tbcEliminar.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue() != null));
+        tbcEliminar.setCellFactory(cd -> new ButtonCell());
+    
+        tbvEmpleados.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                unbindEmpleado();
+                empleadoDto = newValue;
+                bindEmpleado(false);
+            } else {
+                newEmpleado();
+            }
+        });
+
+    }
 
     @FXML
     void onActionBtnBuscar(ActionEvent event) {
@@ -139,10 +190,27 @@ public class TipoPlanillaViewController extends Controller implements Initializa
 
     @FXML
     void onActionBtnNuevo(ActionEvent event) {
-        if (new Mensaje().showConfirmation("Limpiar Tipo Planilla", getStage(),
-                "Desea limpiar el resgistro de Planilla?")) {
-            newPlanillaType();
+        if (tptInclusion.isSelected()) {
+            newEmpleado();
+        } else if (tptTipoPlanilla.isSelected()) {
+            if (new Mensaje().showConfirmation("Limpiar tipo planilla", getStage(), "¿Esta seguro que desea limpiar el registro?")) {
+                newPlanillaType();
+            }
         }
+    }
+
+    @FXML
+    void onActionBtnAgregarEmpleado(ActionEvent event) {
+
+        if (empleadoDto.getId() == null || empleadoDto.getNombre().isEmpty()) {
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Agregar empleado", getStage(), "Es necesario cargar un empleado para agregarlo a la lista.");
+        } else if (tbvEmpleados.getItems() == null || !tbvEmpleados.getItems().stream().anyMatch(a -> a.equals(empleadoDto))) {
+            empleadoDto.setModificado(true);
+            tbvEmpleados.getItems().add(empleadoDto);
+            tbvEmpleados.refresh();
+        }
+        newEmpleado();
+
     }
 
     @FXML
@@ -151,6 +219,38 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         if (event.getCode() == KeyCode.ENTER && !txfId.getText().isEmpty()) {
             chargePlanillaType(Long.valueOf(txfId.getText()));
         }
+    }
+
+    @FXML
+    void onKeyPressedIdEmpleados(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER && !txfIdEmpleado.getText().isEmpty()) {
+            cargarEmpleado(Long.valueOf(txfIdEmpleado.getText()));
+        }
+
+    }
+
+    @FXML
+    void onSelectionEmpleados(Event event) {
+
+        if (tptInclusion.isSelected()) {
+            if (tipoPlanillaDto.getId() == null) {
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Tipo planilla", getStage(), "Debe cargar el tipo de planilla al que desea agregar empleados.");
+                tPlanillas.getSelectionModel().select(tptTipoPlanilla);
+            }
+        }
+
+    }
+
+    @FXML
+    void onSelectionTipoPlanilla(Event event) {
+
+        if (tptInclusion.isSelected()) {
+            if (tipoPlanillaDto.getId() == null) {
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Tipo planilla", getStage(), "Debe cargar el tipo de planilla al que desea agregar empleados.");
+                tPlanillas.getSelectionModel().select(tptTipoPlanilla);
+            }
+        }
+
     }
 
     private void chargePlanillaType(Long id) {
@@ -175,6 +275,25 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         }
     }
 
+    private void chargeEmpleados(){
+        tbvEmpleados.getItems().clear();
+        tbvEmpleados.setItems(tipoPlanillaDto.getEmpleados());
+        tbvEmpleados.refresh();
+    }
+
+    private void cargarEmpleado(Long id) {
+        EmpleadoService service = new EmpleadoService();
+        Respuesta respuesta = service.getEmpleado(id);
+
+        if (respuesta.getEstado()) {
+            unbindEmpleado();
+            empleadoDto = (EmpleadoDto) respuesta.getResultado("Empleado");
+            bindEmpleado(false);
+        } else {
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Cargar empleado", getStage(), respuesta.getMensaje());
+        }
+    }
+
     public void unbindTipoPlanilla() {
         txfId.textProperty().unbind();
         txfCodigo.textProperty().unbindBidirectional(tipoPlanillaDto.codigo);
@@ -191,6 +310,19 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         txfPlanillaXMes.textProperty().bindBidirectional(tipoPlanillaDto.planillasPorMes);
         txfDescripcion.textProperty().bindBidirectional(tipoPlanillaDto.descripcion);
         chkActivo.selectedProperty().bindBidirectional(tipoPlanillaDto.estado);
+    }
+
+    private void bindEmpleado(Boolean nuevo) {
+        if (!nuevo) {
+            txfIdEmpleado.textProperty().bind(this.empleadoDto.id);
+        }
+
+        txfNombreEmpleado.textProperty().bindBidirectional(this.empleadoDto.nombre);
+    }
+
+    private void unbindEmpleado() {
+        txfIdEmpleado.textProperty().unbind();
+        txfNombreEmpleado.textProperty().unbindBidirectional(this.empleadoDto.nombre);
     }
 
     public String validarRequeridos() {
@@ -249,17 +381,63 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         chkActivo.requestFocus();
     }
 
-    @Override
-    public void initialize(URL arg0, ResourceBundle arg1) {
-        txfId.delegateSetTextFormatter(Formato.getInstance().integerFormat());
-        txfPlanillaXMes.delegateSetTextFormatter(Formato.getInstance().integerFormat());
-        txfCodigo.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(4));
-        txfDescripcion.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(40));
-        tipoPlanillaDto = new TipoPlanillaDto();
-        newPlanillaType();
-        requiredNodesIndicate();
-        // TODO Auto-generated method stub
+    private void newEmpleado(){
+        unbindEmpleado();
+        empleadoDto = new EmpleadoDto();
+        bindEmpleado(true);
+        txfIdEmpleado.clear();
+        txfIdEmpleado.requestFocus();
     }
+
+    private class ButtonCell extends TableCell<EmpleadoDto, Boolean> {
+
+        final Button cellButton = new Button();
+    
+        ButtonCell() {
+            cellButton.setPrefWidth(500);
+            cellButton.getStyleClass().add("jfx-btnimg-tbveliminar");
+    
+            cellButton.setOnAction((ActionEvent t) -> {
+                EmpleadoDto emp = (EmpleadoDto) ButtonCell.this.getTableView().getItems().get(ButtonCell.this.getIndex());
+                if (!emp.isModificado()) {
+                    tipoPlanillaDto.getEmpleadosEliminados().add(emp);
+                }
+                tbvEmpleados.getItems().remove(emp);
+                tbvEmpleados.refresh();
+            });
+        }
+    
+        @Override
+        protected void updateItem(Boolean t, boolean empty) {
+            super.updateItem(t, empty);
+            if (empty || t == null) {
+                setGraphic(null);
+            } else {
+                setGraphic(cellButton);
+            }
+        }
+    }
+
+    private void selectionChangeTabEmp(Event event) {
+        if (tptInclusion.isSelected()) {
+            if (tipoPlanillaDto.getId() == null) {
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Tipo planilla", getStage(), "Debe cargar el tipo de planilla al que desea agregar empleados.");
+                tPlanillas.getSelectionModel().select(tptTipoPlanilla);
+            }
+        }
+    }
+
+    private void nuevoRegistro(ActionEvent event) {
+        if (tptInclusion.isSelected()) {
+            newEmpleado();
+        } else if (tptTipoPlanilla.isSelected()) {
+            if (new Mensaje().showConfirmation("Limpiar tipo planilla", getStage(), "¿Esta seguro que desea limpiar el registro?")) {
+                newPlanillaType();
+            }
+        }
+    }
+
+
 
     @Override
     public void initialize() {

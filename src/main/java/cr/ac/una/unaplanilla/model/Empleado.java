@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.QueryHint;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -25,28 +26,55 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "PLAM_EMPLEADOS", schema = "UNA")
-@NamedQueries(
-        {
-            @NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM Empleado e"),//revisar estas NamedQuery que esten bien escritas
-            @NamedQuery(name = "Empleado.findByEmpId", query = "SELECT e FROM Empleado e WHERE e.id = :id"),
-            @NamedQuery(name = "Empleado.findByUsuarioClave", query = "SELECT e FROM Empleado e WHERE e.usuario = :usuario AND e.clave = :clave"),
-        /* @NamedQuery(name = "Empleado.findByEmpNombre", query = "SELECT e FROM Empleado e WHERE e.empNombre = :empNombre"),
-    @NamedQuery(name = "Empleado.findByEmpPapellido", query = "SELECT e FROM Empleado e WHERE e.empPapellido = :empPapellido"),
-    @NamedQuery(name = "Empleado.findByEmpSapellido", query = "SELECT e FROM Empleado e WHERE e.empSapellido = :empSapellido"),
-    @NamedQuery(name = "Empleado.findByEmpCedula", query = "SELECT e FROM Empleado e WHERE e.empCedula = :empCedula"),
-    @NamedQuery(name = "Empleado.findByEmpGenero", query = "SELECT e FROM Empleado e WHERE e.empGenero = :empGenero"),
-    @NamedQuery(name = "Empleado.findByEmpCorreo", query = "SELECT e FROM Empleado e WHERE e.empCorreo = :empCorreo"),
-    @NamedQuery(name = "Empleado.findByEmpAdministrador", query = "SELECT e FROM Empleado e WHERE e.empAdministrador = :empAdministrador"),
-    @NamedQuery(name = "Empleado.findByEmpUsuario", query = "SELECT e FROM Empleado e WHERE e.empUsuario = :empUsuario"),
-    @NamedQuery(name = "Empleado.findByEmpFingreso", query = "SELECT e FROM Empleado e WHERE e.empFingreso = :empFingreso"),
-    @NamedQuery(name = "Empleado.findByEmpFsalida", query = "SELECT e FROM Empleado e WHERE e.empFsalida = :empFsalida"),
-    @NamedQuery(name = "Empleado.findByEmpEstado", query = "SELECT e FROM Empleado e WHERE e.empEstado = :empEstado"),
-    @NamedQuery(name = "Empleado.findByEmpVersion", query = "SELECT e FROM Empleado e WHERE e.empVersion = :empVersion")*/
-        })
+@NamedQueries({
+        @NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM Empleado e"), // revisar estas NamedQuery que
+                                                                                    // esten bien escritas
+        @NamedQuery(name = "Empleado.findByEmpId", query = "SELECT e FROM Empleado e WHERE e.id = :id"),
+        @NamedQuery(name = "Empleado.findByUsuCla", query = "SELECT e FROM Empleado e WHERE e.usuario = :usuario AND e.clave = :clave"),
+        @NamedQuery(name = "Empleado.findByCedNomPApe", query = "SELECT e FROM Empleado e WHERE UPPER(e.nombre) LIKE :nombre AND UPPER(e.cedula) LIKE :cedula AND UPPER(e.primerApellido) LIKE :primerApellido AND UPPER(e.segundoApellido) LIKE :segundoApellido"),
+/*
+ * @NamedQuery(name = "Empleado.findByEmpPapellido", query =
+ * "SELECT e FROM Empleado e WHERE e.empPapellido = :empPapellido"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpSapellido", query =
+ * "SELECT e FROM Empleado e WHERE e.empSapellido = :empSapellido"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpCedula", query =
+ * "SELECT e FROM Empleado e WHERE e.empCedula = :empCedula"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpNombre", query =
+ * "SELECT e FROM Empleado e WHERE e.empNombre = :empNombre"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpGenero", query =
+ * "SELECT e FROM Empleado e WHERE e.empGenero = :empGenero"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpCorreo", query =
+ * "SELECT e FROM Empleado e WHERE e.empCorreo = :empCorreo"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpAdministrador", query =
+ * "SELECT e FROM Empleado e WHERE e.empAdministrador = :empAdministrador"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpUsuario", query =
+ * "SELECT e FROM Empleado e WHERE e.empUsuario = :empUsuario"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpFingreso", query =
+ * "SELECT e FROM Empleado e WHERE e.empFingreso = :empFingreso"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpFsalida", query =
+ * "SELECT e FROM Empleado e WHERE e.empFsalida = :empFsalida"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpEstado", query =
+ * "SELECT e FROM Empleado e WHERE e.empEstado = :empEstado"),
+ * 
+ * @NamedQuery(name = "Empleado.findByEmpVersion", query =
+ * "SELECT e FROM Empleado e WHERE e.empVersion = :empVersion")
+ */
+})
 public class Empleado implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    // @Max(value=?) @Min(value=?)//if you know range of your decimal fields
+    // consider using these annotations to enforce field validation
     @Id
     @SequenceGenerator(name = "PLAM_EMPLEADOS_EMP_ID_GENERATOR", sequenceName = "una.PLAM_EMPLEADOS_SEQ01", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PLAM_EMPLEADOS_EMP_ID_GENERATOR")
@@ -79,10 +107,10 @@ public class Empleado implements Serializable {
     private String clave;
     @Basic(optional = false)
     @Column(name = "EMP_FINGRESO")
-    //@Temporal(TemporalType.TIMESTAMP)
+    // @Temporal(TemporalType.TIMESTAMP)
     private LocalDate fechaIngreso;
     @Column(name = "EMP_FSALIDA")
-    //@Temporal(TemporalType.TIMESTAMP)
+    // @Temporal(TemporalType.TIMESTAMP)
     private LocalDate fechaSalida;
     @Basic(optional = false)
     @Column(name = "EMP_ESTADO")
@@ -251,13 +279,11 @@ public class Empleado implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Empleado))
-        {
+        if (!(object instanceof Empleado)) {
             return false;
         }
         Empleado other = (Empleado) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)))
-        {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;

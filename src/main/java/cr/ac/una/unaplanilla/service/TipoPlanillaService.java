@@ -120,4 +120,23 @@ public class TipoPlanillaService {
         }
     }
 
+    public Respuesta getTipoPlanillasIDyCed(String idemp, String cedula) {
+        try {
+            Query query = em.createNamedQuery("TipoPlanilla.findByCedulaIDEmp",TipoPlanilla.class);
+            query.setParameter("id", idemp);
+            query.setParameter("cedula", cedula);
+            List<TipoPlanilla> tipoPlanilla = (List<TipoPlanilla>) query.getResultList();
+            List<TipoPlanillaDto> tipoPlanillaDto = new ArrayList<>();
+            for (TipoPlanilla tpl : tipoPlanilla) {
+                tipoPlanillaDto.add(new TipoPlanillaDto(tpl));
+            }
+            return new Respuesta(true, "", "", "Planillas", tipoPlanillaDto);
+        } catch (NoResultException ex) {
+            return new Respuesta(false, "No existen planillas con los criterios ingresados.", "getPlanillas NoResultException");
+        } catch (Exception ex) {
+            Logger.getLogger(EmpleadoService.class.getName()).log(Level.SEVERE, "Error obteniendo planillas.", ex);
+            return new Respuesta(false, "Error obteniendo planillas.", "getPlanillas " + ex.getMessage());
+        }
+    }
+
 }

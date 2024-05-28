@@ -2,6 +2,8 @@ package cr.ac.una.unaplanilla.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,7 +28,7 @@ public class EmpleadoDto implements Serializable {
     public SimpleBooleanProperty estado;
     private Long version;
     private boolean modificado;
-    // private List<TipoPlanilla> tiposPlanilla;
+    private List<TipoPlanilla> tiposPlanilla;
 
     public EmpleadoDto() {
         this.id = new SimpleStringProperty("");
@@ -63,24 +65,8 @@ public class EmpleadoDto implements Serializable {
         this.version = empleado.getVersion();
     }
 
-//    public EmpleadoDto(SimpleStringProperty id, SimpleStringProperty nombre, SimpleStringProperty primerApellido, SimpleStringProperty segundoApellido, SimpleStringProperty cedula, ObjectProperty<String> genero, SimpleStringProperty correo, SimpleStringProperty administrador, SimpleStringProperty usuario, SimpleStringProperty clave, ObjectProperty<LocalDate> fechaIngreso, ObjectProperty<LocalDate> fechaSalida, SimpleStringProperty estado) {
-//        this.id = id;
-//        this.nombre = nombre;
-//        this.primerApellido = primerApellido;
-//        this.segundoApellido = segundoApellido;
-//        this.cedula = cedula;
-//        this.genero = genero;
-//        this.correo = correo;
-//        this.administrador = administrador;
-//        this.usuario = usuario;
-//        this.clave = clave;
-//        this.fechaIngreso = fechaIngreso;
-//        this.fechaSalida = fechaSalida;
-//        this.estado = estado;
-//    }
     public Long getId() {
-        if (this.id.get() != null && !this.id.get().isBlank())
-        {
+        if (this.id.get() != null && !this.id.get().isBlank()) {
             return Long.valueOf(this.id.get());
         }
         return null;
@@ -202,13 +188,14 @@ public class EmpleadoDto implements Serializable {
         this.modificado = modificado;
     }
 
-//    public List<TipoPlanilla> getTiposPlanilla() {
-//        return tiposPlanilla;
-//    }
-//
-//    public void setTiposPlanilla(List<TipoPlanilla> tiposPlanilla) {
-//        this.tiposPlanilla = tiposPlanilla;
-//    }
+    public List<TipoPlanilla> getTiposPlanilla() {
+        return tiposPlanilla;
+    }
+
+    public void setTiposPlanilla(List<TipoPlanilla> tiposPlanilla) {
+        this.tiposPlanilla = tiposPlanilla;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -219,13 +206,11 @@ public class EmpleadoDto implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof EmpleadoDto))
-        {
+        if (!(object instanceof EmpleadoDto)) {
             return false;
         }
         EmpleadoDto other = (EmpleadoDto) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)))
-        {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -233,7 +218,7 @@ public class EmpleadoDto implements Serializable {
 
     @Override
     public String toString() {
-        return "cr.ac.una.unaplanilla.model.EmpleadoDto[ empId=" + id + " ]";
+        return "EmpleadoDto{" + "empId=" + id + ", empNombre=" + nombre + ", empPapellido=" + primerApellido + ", empSapellido=" + segundoApellido + ", empCedula=" + cedula + ", empGenero=" + genero + ", empCorreo=" + correo + ", empAdministrador=" + administrador + ", empUsuario=" + usuario + ", empClave=" + clave + ", empFingreso=" + fechaIngreso + ", empFsalida=" + fechaSalida + ", empEstado=" + estado + '}';
     }
 
 }

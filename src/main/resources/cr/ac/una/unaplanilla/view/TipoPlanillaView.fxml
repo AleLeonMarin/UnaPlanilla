@@ -25,7 +25,7 @@
                   <Label styleClass="jfx-titulo-label" text="Control Tipo Planilla" VBox.vgrow="ALWAYS" />
                   <TabPane fx:id="tPlanillas" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="420.0" prefWidth="760.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="100.0" tabMaxWidth="200.0" VBox.vgrow="ALWAYS">
                     <tabs>
-                      <Tab fx:id="tptTipoPlanilla" text="Tipo Planilla">
+                      <Tab fx:id="tptTipoPlanilla" onSelectionChanged="#onSelectionTipoPlanilla" text="Tipo Planilla">
                            <content>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
@@ -82,7 +82,7 @@
                               </AnchorPane>
                            </content>
                         </Tab>
-                      <Tab fx:id="tptInclusion" text="Inclusion Empleados">
+                      <Tab fx:id="tptInclusion" onSelectionChanged="#onSelectionEmpleados" text="Inclusion Empleados">
                            <content>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
@@ -90,19 +90,19 @@
                                        <children>
                                           <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="50.0" prefWidth="690.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                              <children>
-                                                <MFXTextField floatingText="Id de Empleado" prefWidth="160.0">
+                                                <MFXTextField fx:id="txfIdEmpleado" floatingText="Id de Empleado" onKeyPressed="#onKeyPressedIdEmpleados" prefWidth="160.0">
                                                    <styleClass>
                                                       <String fx:value="jfx-txfs-tipo-planilla" />
                                                       <String fx:value="jfx-txfs-tipo-planilla-container" />
                                                    </styleClass>
                                                 </MFXTextField>
-                                                <MFXTextField floatingText="Nombre" prefWidth="407.0">
+                                                <MFXTextField fx:id="txfNombreEmpleado" floatingText="Nombre" prefWidth="407.0">
                                                    <styleClass>
                                                       <String fx:value="jfx-txfs-tipo-planilla" />
                                                       <String fx:value="jfx-txfs-tipo-planilla-container" />
                                                    </styleClass>
                                                 </MFXTextField>
-                                                <MFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" ellipsisString="" prefHeight="50.0" prefWidth="43.0" styleClass="jfx-btn-Nuevo">
+                                                <MFXButton fx:id="btnAgregarEmpleado" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" ellipsisString="" onAction="#onActionBtnAgregarEmpleado" prefHeight="50.0" prefWidth="43.0" styleClass="jfx-btn-Nuevo">
                                                    <graphic>
                                                       <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" />
                                                    </graphic>
@@ -111,11 +111,11 @@
                                           </HBox>
                                           <Label styleClass="jfx-subtitulo-label" text="Lista empleados" />
                                           <Separator prefWidth="200.0" styleClass="jfx-separator" />
-                                          <TableView prefHeight="249.0" prefWidth="690.0">
+                                          <TableView fx:id="tbvEmpleados" prefHeight="249.0" prefWidth="690.0">
                                             <columns>
-                                              <TableColumn prefWidth="75.0" text="ID" />
-                                              <TableColumn prefWidth="75.0" text="Nombre" />
-                                                <TableColumn prefWidth="75.0" text="Eliminar" />
+                                              <TableColumn fx:id="tbcCodigo" prefWidth="75.0" text="ID" />
+                                              <TableColumn fx:id="tbcNombre" prefWidth="75.0" text="Nombre" />
+                                                <TableColumn fx:id="tbcEliminar" prefWidth="75.0" text="Eliminar" />
                                             </columns>
                                           </TableView>
                                        </children></VBox>
