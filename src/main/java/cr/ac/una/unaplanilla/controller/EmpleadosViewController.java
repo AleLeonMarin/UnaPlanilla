@@ -284,7 +284,7 @@ public class EmpleadosViewController extends Controller implements Initializable
 
     @FXML
     private void onActionBtnBuscar(ActionEvent event) {
-        FlowController.getInstance().goViewInWindow("BusquedaView");
+        FlowController.getInstance().goViewInWindowModal("BusquedaView" , getStage(), false);
     }
 
     @FXML

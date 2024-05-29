@@ -11,6 +11,7 @@ import cr.ac.una.unaplanilla.model.EmpleadoDto;
 import cr.ac.una.unaplanilla.model.TipoPlanillaDto;
 import cr.ac.una.unaplanilla.service.EmpleadoService;
 import cr.ac.una.unaplanilla.service.TipoPlanillaService;
+import cr.ac.una.unaplanilla.util.FlowController;
 import cr.ac.una.unaplanilla.util.Formato;
 import cr.ac.una.unaplanilla.util.Mensaje;
 import cr.ac.una.unaplanilla.util.Respuesta;
@@ -126,6 +127,8 @@ public class TipoPlanillaViewController extends Controller implements Initializa
 
     @FXML
     void onActionBtnBuscar(ActionEvent event) {
+
+        FlowController.getInstance().goViewInWindowModal("BusquedaViewPlanilla", getStage(), true);
 
     }
 
@@ -438,7 +441,12 @@ public class TipoPlanillaViewController extends Controller implements Initializa
     }
 
 
-
+    public void setTipoPlanilla(TipoPlanillaDto tipoPlanillaDto) {
+        unbindTipoPlanilla();
+        this.tipoPlanillaDto = tipoPlanillaDto;
+        bindTipoPlanilla(false);
+        validarRequeridos();
+    }
     @Override
     public void initialize() {
         // TODO Auto-generated method stub

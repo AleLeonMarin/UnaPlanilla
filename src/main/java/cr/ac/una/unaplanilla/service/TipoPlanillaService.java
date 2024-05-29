@@ -5,30 +5,21 @@
  */
 package cr.ac.una.unaplanilla.service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import cr.ac.una.unaplanilla.model.TipoPlanillaDto;
 import cr.ac.una.unaplanilla.model.Empleado;
-import cr.ac.una.unaplanilla.model.EmpleadoDto;
 import cr.ac.una.unaplanilla.model.TipoPlanilla;
 import cr.ac.una.unaplanilla.util.Respuesta;
 import cr.ac.una.unaplanilla.util.EntityManagerHelper;
 import jakarta.persistence.EntityManager;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import cr.ac.una.unaplanilla.util.EntityManagerHelper;
-import cr.ac.una.unaplanilla.util.Respuesta;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TipoPlanillaService {
 
@@ -53,6 +44,43 @@ public class TipoPlanillaService {
             Logger.getLogger(TipoPlanillaService.class.getName()).log(Level.SEVERE,
                     "Error obteniendo el tipo de planilla [" + id + "]", ex);
             return new Respuesta(false, "Error obteniendo el tipo de planilla.", "getTipoPlanilla " + ex.getMessage());
+        }
+    }
+
+    public Respuesta filtrarPlanillas(String codigo, String descripcion, String planillasXMes) {
+        try {
+            StringBuilder jpql = new StringBuilder("Select t from TipoPlanilla t where 1=1");
+
+            if (codigo != null && !codigo.trim().isEmpty()) {
+                jpql.append(" AND t.tplaCodigo  LIKE :codigo");
+            }
+            if (descripcion != null && !descripcion.trim().isEmpty()) {
+                jpql.append(" AND t.tplaDescripcion LIKE :descripcion");
+            }
+            if (planillasXMes != null && !planillasXMes.trim().isEmpty()) {
+                jpql.append(" AND t.tplaPlaxmes LIKE :planillasMes");
+            }
+           
+
+            Query query = em.createQuery(jpql.toString(), TipoPlanilla.class);
+
+            if (codigo != null && !codigo.trim().isEmpty()) {
+                query.setParameter("codigo", "%" + codigo + "%");
+            }
+            if (descripcion != null && !descripcion.trim().isEmpty()) {
+                query.setParameter("descripcion", "%" + descripcion + "%");
+            }
+            if (planillasXMes != null && !planillasXMes.trim().isEmpty()) {
+                query.setParameter("planillasMes", "%" + planillasXMes + "%");
+            }
+
+            List<TipoPlanilla> tipoPlanilla = query.getResultList();
+            List<TipoPlanillaDto> tipoPlanillaDto = tipoPlanilla.stream().map(TipoPlanillaDto::new).collect(Collectors.toList());
+
+            return new Respuesta(true, "", "", "TipoPlanillas", tipoPlanillaDto);
+        } catch (Exception ex) {
+            Logger.getLogger(TipoPlanillaService.class.getName()).log(Level.SEVERE, "Error filtrando las planillas", ex);
+            return new Respuesta(false, "Error filtrando las planillas.", "filtrarPlanillas " + ex.getMessage());
         }
     }
 
@@ -84,7 +112,6 @@ public class TipoPlanillaService {
                     "guardarTipoPlanilla " + ex.getMessage());
         }
     }
-
 
     public Respuesta eliminarTipoPlanilla(Long id) {
         try {
@@ -122,7 +149,7 @@ public class TipoPlanillaService {
 
     public Respuesta getTipoPlanillasIDyCed(String idemp, String cedula) {
         try {
-            Query query = em.createNamedQuery("TipoPlanilla.findByCedulaIDEmp",TipoPlanilla.class);
+            Query query = em.createNamedQuery("TipoPlanilla.findByCedulaIDEmp", TipoPlanilla.class);
             query.setParameter("id", idemp);
             query.setParameter("cedula", cedula);
             List<TipoPlanilla> tipoPlanilla = (List<TipoPlanilla>) query.getResultList();
@@ -132,7 +159,8 @@ public class TipoPlanillaService {
             }
             return new Respuesta(true, "", "", "Planillas", tipoPlanillaDto);
         } catch (NoResultException ex) {
-            return new Respuesta(false, "No existen planillas con los criterios ingresados.", "getPlanillas NoResultException");
+            return new Respuesta(false, "No existen planillas con los criterios ingresados.",
+                    "getPlanillas NoResultException");
         } catch (Exception ex) {
             Logger.getLogger(EmpleadoService.class.getName()).log(Level.SEVERE, "Error obteniendo planillas.", ex);
             return new Respuesta(false, "Error obteniendo planillas.", "getPlanillas " + ex.getMessage());
