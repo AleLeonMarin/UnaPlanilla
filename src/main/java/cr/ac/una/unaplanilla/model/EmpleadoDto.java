@@ -2,8 +2,6 @@ package cr.ac.una.unaplanilla.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,7 +26,6 @@ public class EmpleadoDto implements Serializable {
     public SimpleBooleanProperty estado;
     private Long version;
     private boolean modificado;
-    private List<TipoPlanilla> tiposPlanilla;
 
     public EmpleadoDto() {
         this.id = new SimpleStringProperty("");
@@ -188,14 +185,6 @@ public class EmpleadoDto implements Serializable {
         this.modificado = modificado;
     }
 
-    public List<TipoPlanilla> getTiposPlanilla() {
-        return tiposPlanilla;
-    }
-
-    public void setTiposPlanilla(List<TipoPlanilla> tiposPlanilla) {
-        this.tiposPlanilla = tiposPlanilla;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -218,7 +207,11 @@ public class EmpleadoDto implements Serializable {
 
     @Override
     public String toString() {
-        return "EmpleadoDto{" + "empId=" + id + ", empNombre=" + nombre + ", empPapellido=" + primerApellido + ", empSapellido=" + segundoApellido + ", empCedula=" + cedula + ", empGenero=" + genero + ", empCorreo=" + correo + ", empAdministrador=" + administrador + ", empUsuario=" + usuario + ", empClave=" + clave + ", empFingreso=" + fechaIngreso + ", empFsalida=" + fechaSalida + ", empEstado=" + estado + '}';
+        return "EmpleadoDto{" + "empId=" + id + ", empNombre=" + nombre + ", empPapellido=" + primerApellido
+                + ", empSapellido=" + segundoApellido + ", empCedula=" + cedula + ", empGenero=" + genero
+                + ", empCorreo=" + correo + ", empAdministrador=" + administrador + ", empUsuario=" + usuario
+                + ", empClave=" + clave + ", empFingreso=" + fechaIngreso + ", empFsalida=" + fechaSalida
+                + ", empEstado=" + estado + '}';
     }
 
 }

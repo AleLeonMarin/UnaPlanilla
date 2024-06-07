@@ -186,39 +186,42 @@
 		-fx-border-width: 1px;
 	}
 
-	.jfx-btnimg-tbvEliminar {
+	.jfx-btnimg-tbveliminar {
 		-fx-opacity: 0.8;
 		-fx-background-repeat: no-repeat;
 		-fx-background-position: center;
 		-fx-background-size: contain;
 		-fx-background-color: #f44336;
-		-fx-image: url("../resources/Eliminar-48.png");
-
+		-fx-background-image: url("../resources/Eliminar-48.png");
 	}
 
-	.jfx-mfx-btn-accept > ImageView {
+	.jfx-mfx-btn-accept>ImageView {
 		-fx-image: url("../resources/filter.png");
 	}
 
-	.jfx-mfx-btn-load > ImageView {
+	.jfx-mfx-btn-load>ImageView {
 		-fx-image: url("../resources/load.png");
 	}
 
-	.jfx-mfx-btn-accept, .jfx-mfx-btn-accept:armed, .jfx-mfx-btn-accept:focused {
+	.jfx-mfx-btn-accept,
+	.jfx-mfx-btn-accept:armed,
+	.jfx-mfx-btn-accept:focused {
 		-fx-background-color: #00C853;
 
 	}
 
-	.jfx-mfx-btn-load, .jfx-mfx-btn-load:armed, .jfx-mfx-btn-load:focused {
+	.jfx-mfx-btn-load,
+	.jfx-mfx-btn-load:armed,
+	.jfx-mfx-btn-load:focused {
 		-fx-background-color: #2196F3;
 
 	}
 
-	.jfx-hbox-container{
+	.jfx-hbox-container {
 
 		-fx-background-color: #2196F3;
 		-fx-text-fill: white;
-		-fx-font-size: 20	px;
+		-fx-font-size: 20 px;
 		-fx-font-weight: bold;
 		-fx-padding: 5 0 5 0;
 		-fx-text-alignment: center;

@@ -17,6 +17,7 @@ import javafx.stage.WindowEvent;
 import cr.ac.una.unaplanilla.controller.Controller;
 import io.github.palexdev.materialfx.css.themes.MFXThemeManager;
 import io.github.palexdev.materialfx.css.themes.Themes;
+import javafx.scene.image.Image;
 
 public class FlowController {
 
@@ -139,8 +140,7 @@ public class FlowController {
         Controller controller = loader.getController();
         controller.initialize();
         Stage stage = new Stage();
-        // stage.getIcons().add(new
-        // Image("cr/ac/una/unaplanillaj21/resources/LogoUNArojo.png"));
+        stage.getIcons().add(new Image("cr/ac/una/unaplanilla/resources/Agregar-48.png"));
         stage.setOnHidden((WindowEvent event) -> {
             controller.getStage().getScene().setRoot(new Pane());
             controller.setStage(null);
@@ -159,8 +159,7 @@ public class FlowController {
         Controller controller = loader.getController();
         controller.initialize();
         Stage stage = new Stage();
-        // stage.getIcons().add(new
-        // Image("cr/ac/una/unaplanillaj21/resources/LogoUNArojo.png"));
+        stage.getIcons().add(new Image("cr/ac/una/unaplanilla/resources/Agregar-48.png"));
         stage.setResizable(resizable);
         stage.setOnHidden((WindowEvent event) -> {
             controller.getStage().getScene().setRoot(new Pane());

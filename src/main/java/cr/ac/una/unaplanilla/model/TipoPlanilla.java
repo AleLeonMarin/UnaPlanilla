@@ -170,6 +170,8 @@ public class TipoPlanilla implements Serializable {
         this.empleados = empleadoList;
     }
 
+    @SequenceGenerator(name = "PLAM_EMPLEADOS_EMP_ID_GENERATOR", sequenceName = "UNA.PLAM_EMPLEADOS_SEQ01", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PLAM_EMPLEADOS_EMP_ID_GENERATOR")
     @Override
     public int hashCode() {
         int hash = 0;

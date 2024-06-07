@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import cr.ac.una.unaplanilla.model.TipoPlanillaDto;
 import cr.ac.una.unaplanilla.model.Empleado;
+import cr.ac.una.unaplanilla.model.EmpleadoDto;
 import cr.ac.una.unaplanilla.model.TipoPlanilla;
 import cr.ac.una.unaplanilla.util.Respuesta;
 import cr.ac.una.unaplanilla.util.EntityManagerHelper;
@@ -30,7 +31,14 @@ public class TipoPlanillaService {
         try {
             Query qryTipoPlanilla = em.createNamedQuery("TipoPlanilla.findByTplaId", TipoPlanilla.class);
             qryTipoPlanilla.setParameter("tplaId", id);
-            TipoPlanillaDto tipoPlanillaDto = new TipoPlanillaDto((TipoPlanilla) qryTipoPlanilla.getSingleResult());
+
+            TipoPlanilla tipoPlanilla = (TipoPlanilla) qryTipoPlanilla.getSingleResult();
+            TipoPlanillaDto tipoPlanillaDto = new TipoPlanillaDto(tipoPlanilla);
+
+            for (Empleado emp : tipoPlanilla.getEmpleadoList()) {
+                tipoPlanillaDto.getEmpleados().add(new EmpleadoDto(emp));
+            }
+
             return new Respuesta(true, "", "", "TipoPlanilla", tipoPlanillaDto);
         } catch (NoResultException ex) {
             return new Respuesta(false, "No existe un tipo de planilla con el código ingresado.",
@@ -60,7 +68,6 @@ public class TipoPlanillaService {
             if (planillasXMes != null && !planillasXMes.trim().isEmpty()) {
                 jpql.append(" AND t.tplaPlaxmes LIKE :planillasMes");
             }
-           
 
             Query query = em.createQuery(jpql.toString(), TipoPlanilla.class);
 
@@ -75,11 +82,13 @@ public class TipoPlanillaService {
             }
 
             List<TipoPlanilla> tipoPlanilla = query.getResultList();
-            List<TipoPlanillaDto> tipoPlanillaDto = tipoPlanilla.stream().map(TipoPlanillaDto::new).collect(Collectors.toList());
+            List<TipoPlanillaDto> tipoPlanillaDto = tipoPlanilla.stream().map(TipoPlanillaDto::new)
+                    .collect(Collectors.toList());
 
             return new Respuesta(true, "", "", "TipoPlanillas", tipoPlanillaDto);
         } catch (Exception ex) {
-            Logger.getLogger(TipoPlanillaService.class.getName()).log(Level.SEVERE, "Error filtrando las planillas", ex);
+            Logger.getLogger(TipoPlanillaService.class.getName()).log(Level.SEVERE, "Error filtrando las planillas",
+                    ex);
             return new Respuesta(false, "Error filtrando las planillas.", "filtrarPlanillas " + ex.getMessage());
         }
     }
@@ -92,18 +101,35 @@ public class TipoPlanillaService {
             if (tipoPlanillaDto.getId() != null && tipoPlanillaDto.getId() > 0) {
                 tipoPlanilla = em.find(TipoPlanilla.class, tipoPlanillaDto.getId());
                 if (tipoPlanilla == null) {
-                    et.rollback();
                     return new Respuesta(false, "No se encontró el tipo de planilla a modificar.",
                             "guardarTipoPlanilla NoResultException");
                 }
                 tipoPlanilla.actualizarTipoPlanilla(tipoPlanillaDto);
+                for (EmpleadoDto empleadoDto : tipoPlanillaDto.getEmpleadosEliminados()) {
+                    tipoPlanilla.getEmpleadoList().remove(new Empleado(empleadoDto.getId()));
+                }
+                if (!(tipoPlanillaDto.getEmpleados().isEmpty())) {
+                    for (EmpleadoDto empDto : tipoPlanillaDto.getEmpleados()) {
+                        if (empDto.isModificado()) {
+
+                            Empleado empleado = em.find(Empleado.class, empDto.getId());
+                            empleado.getTiposPlanilla().add(tipoPlanilla);
+                            tipoPlanilla.getEmpleadoList().add(empleado);
+
+                        }
+                    }
+                }
                 tipoPlanilla = em.merge(tipoPlanilla);
             } else {
                 tipoPlanilla = new TipoPlanilla(tipoPlanillaDto);
                 em.persist(tipoPlanilla);
             }
             et.commit();
-            return new Respuesta(true, "", "", "TipoPlanilla", new TipoPlanillaDto(tipoPlanilla));
+            tipoPlanillaDto = new TipoPlanillaDto(tipoPlanilla);
+            for (Empleado emp : tipoPlanilla.getEmpleadoList()) {
+                tipoPlanillaDto.getEmpleados().add(new EmpleadoDto(emp));
+            }
+            return new Respuesta(true, "", "", "TipoPlanilla", tipoPlanillaDto);
         } catch (Exception ex) {
             et.rollback();
             Logger.getLogger(TipoPlanillaService.class.getName()).log(Level.SEVERE,

@@ -21,7 +21,9 @@ import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -99,6 +101,7 @@ public class TipoPlanillaViewController extends Controller implements Initializa
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+        txfIdEmpleado.delegateSetTextFormatter(Formato.getInstance().integerFormat());
         txfId.delegateSetTextFormatter(Formato.getInstance().integerFormat());
         txfPlanillaXMes.delegateSetTextFormatter(Formato.getInstance().integerFormat());
         txfCodigo.delegateSetTextFormatter(Formato.getInstance().maxLengthFormat(4));
@@ -107,21 +110,22 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         empleadoDto = new EmpleadoDto();
         newPlanillaType();
         requiredNodesIndicate();
-    
+
         tbcCodigo.setCellValueFactory(cd -> cd.getValue().id);
         tbcNombre.setCellValueFactory(cd -> cd.getValue().nombre);
-        tbcEliminar.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue() != null));
-        tbcEliminar.setCellFactory(cd -> new ButtonCell());
-    
-        tbvEmpleados.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                unbindEmpleado();
-                empleadoDto = newValue;
-                bindEmpleado(false);
-            } else {
-                newEmpleado();
-            }
-        });
+        tbcEliminar.setCellValueFactory(
+                (TableColumn.CellDataFeatures<EmpleadoDto, Boolean> p) -> new SimpleBooleanProperty(
+                        p.getValue() != null));
+        tbcEliminar.setCellFactory((TableColumn<EmpleadoDto, Boolean> p) -> new ButtonCell());
+
+        tbvEmpleados.getSelectionModel().selectedItemProperty().addListener(
+                (ObservableValue<? extends EmpleadoDto> observable, EmpleadoDto oldValue, EmpleadoDto newValue) -> {
+                    unbindEmpleado();
+                    if (newValue != null) {
+                        this.empleadoDto = newValue;
+                        bindEmpleado(false);
+                    }
+                });
 
     }
 
@@ -167,24 +171,25 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         try {
             String invalidos = validarRequeridos();
             if (!invalidos.isBlank()) {
-                new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", this.getStage(), invalidos);
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", getStage(), invalidos);
             } else {
                 TipoPlanillaService tipoPlanillaService = new TipoPlanillaService();
-                Respuesta respuesta = tipoPlanillaService.guardarTipoPlanilla(tipoPlanillaDto);
+                Respuesta respuesta = tipoPlanillaService.guardarTipoPlanilla(this.tipoPlanillaDto);
                 if (respuesta.getEstado()) {
                     unbindTipoPlanilla();
                     this.tipoPlanillaDto = (TipoPlanillaDto) respuesta.getResultado("TipoPlanilla");
                     bindTipoPlanilla(false);
-                    new Mensaje().showModal(Alert.AlertType.INFORMATION, "Guardar Tipo Planilla", this.getStage(),
+                    chargeEmpleados();
+                    new Mensaje().showModal(Alert.AlertType.INFORMATION, "Guardar Tipo Planilla", getStage(),
                             "Tipo de Planilla guardado correctamente.");
                 } else {
-                    new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", getStage(),
+                    new Mensaje().showModal(Alert.AlertType.ERROR, "Cargar Tipo Planilla", getStage(),
                             respuesta.getMensaje());
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ex) {
             Logger.getLogger(TipoPlanillaViewController.class.getName()).log(Level.SEVERE,
-                    "Error al guardar el tipo de planilla.", e);
+                    "Error al guardar el tipo de planilla.", ex);
             new Mensaje().showModal(Alert.AlertType.ERROR, "Guardar Tipo Planilla", getStage(),
                     "Ocurrió un error al guardar el tipo de planilla.");
         }
@@ -196,7 +201,8 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         if (tptInclusion.isSelected()) {
             newEmpleado();
         } else if (tptTipoPlanilla.isSelected()) {
-            if (new Mensaje().showConfirmation("Limpiar tipo planilla", getStage(), "¿Esta seguro que desea limpiar el registro?")) {
+            if (new Mensaje().showConfirmation("Limpiar tipo planilla", getStage(),
+                    "¿Esta seguro que desea limpiar el registro?")) {
                 newPlanillaType();
             }
         }
@@ -206,10 +212,12 @@ public class TipoPlanillaViewController extends Controller implements Initializa
     void onActionBtnAgregarEmpleado(ActionEvent event) {
 
         if (empleadoDto.getId() == null || empleadoDto.getNombre().isEmpty()) {
-            new Mensaje().showModal(Alert.AlertType.ERROR, "Agregar empleado", getStage(), "Es necesario cargar un empleado para agregarlo a la lista.");
-        } else if (tbvEmpleados.getItems() == null || !tbvEmpleados.getItems().stream().anyMatch(a -> a.equals(empleadoDto))) {
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Agregar empleado", getStage(),
+                    "Es necesario cargar un empleado para agregarlo a la lista.");
+        } else if (tbvEmpleados.getItems() == null
+                || tbvEmpleados.getItems().stream().noneMatch(a -> a.equals(this.empleadoDto))) {
             empleadoDto.setModificado(true);
-            tbvEmpleados.getItems().add(empleadoDto);
+            tbvEmpleados.getItems().add(this.empleadoDto);
             tbvEmpleados.refresh();
         }
         newEmpleado();
@@ -237,7 +245,8 @@ public class TipoPlanillaViewController extends Controller implements Initializa
 
         if (tptInclusion.isSelected()) {
             if (tipoPlanillaDto.getId() == null) {
-                new Mensaje().showModal(Alert.AlertType.ERROR, "Tipo planilla", getStage(), "Debe cargar el tipo de planilla al que desea agregar empleados.");
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Tipo planilla", getStage(),
+                        "Debe cargar el tipo de planilla al que desea agregar empleados.");
                 tPlanillas.getSelectionModel().select(tptTipoPlanilla);
             }
         }
@@ -246,13 +255,6 @@ public class TipoPlanillaViewController extends Controller implements Initializa
 
     @FXML
     void onSelectionTipoPlanilla(Event event) {
-
-        if (tptInclusion.isSelected()) {
-            if (tipoPlanillaDto.getId() == null) {
-                new Mensaje().showModal(Alert.AlertType.ERROR, "Tipo planilla", getStage(), "Debe cargar el tipo de planilla al que desea agregar empleados.");
-                tPlanillas.getSelectionModel().select(tptTipoPlanilla);
-            }
-        }
 
     }
 
@@ -276,12 +278,6 @@ public class TipoPlanillaViewController extends Controller implements Initializa
             new Mensaje().showModal(Alert.AlertType.ERROR, "Cargar Tipo Planilla", this.getStage(),
                     "Ocurrió un error al cargar el tipo de planilla.");
         }
-    }
-
-    private void chargeEmpleados(){
-        tbvEmpleados.getItems().clear();
-        tbvEmpleados.setItems(tipoPlanillaDto.getEmpleados());
-        tbvEmpleados.refresh();
     }
 
     private void cargarEmpleado(Long id) {
@@ -313,6 +309,12 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         txfPlanillaXMes.textProperty().bindBidirectional(tipoPlanillaDto.planillasPorMes);
         txfDescripcion.textProperty().bindBidirectional(tipoPlanillaDto.descripcion);
         chkActivo.selectedProperty().bindBidirectional(tipoPlanillaDto.estado);
+    }
+
+    public void chargeEmpleados() {
+        tbvEmpleados.getItems().clear();
+        tbvEmpleados.setItems(this.tipoPlanillaDto.getEmpleados());
+        tbvEmpleados.refresh();
     }
 
     private void bindEmpleado(Boolean nuevo) {
@@ -381,65 +383,49 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         tipoPlanillaDto = new TipoPlanillaDto();
         bindTipoPlanilla(true);
         txfId.clear();
+        txfId.requestFocus();
+        newEmpleado();
+        chargeEmpleados();
         chkActivo.requestFocus();
     }
 
-    private void newEmpleado(){
+    private void newEmpleado() {
         unbindEmpleado();
-        empleadoDto = new EmpleadoDto();
+        // tbvEmpleados.getSelectionModel().clearSelection();
+        tbvEmpleados.getSelectionModel().select(null);
+        this.empleadoDto = new EmpleadoDto();
         bindEmpleado(true);
         txfIdEmpleado.clear();
         txfIdEmpleado.requestFocus();
+
     }
 
     private class ButtonCell extends TableCell<EmpleadoDto, Boolean> {
 
         final Button cellButton = new Button();
-    
+
         ButtonCell() {
             cellButton.setPrefWidth(500);
             cellButton.getStyleClass().add("jfx-btnimg-tbveliminar");
-    
-            cellButton.setOnAction((ActionEvent t) -> {
-                EmpleadoDto emp = (EmpleadoDto) ButtonCell.this.getTableView().getItems().get(ButtonCell.this.getIndex());
-                if (!emp.isModificado()) {
-                    tipoPlanillaDto.getEmpleadosEliminados().add(emp);
-                }
+
+            cellButton.setOnAction(t -> {
+                EmpleadoDto emp = (EmpleadoDto) ButtonCell.this.getTableView().getItems()
+                        .get(ButtonCell.this.getIndex());
+                tipoPlanillaDto.getEmpleadosEliminados().add(emp);
                 tbvEmpleados.getItems().remove(emp);
                 tbvEmpleados.refresh();
             });
         }
-    
+
         @Override
         protected void updateItem(Boolean t, boolean empty) {
             super.updateItem(t, empty);
-            if (empty || t == null) {
-                setGraphic(null);
-            } else {
+            if (!empty) {
                 setGraphic(cellButton);
             }
         }
-    }
 
-    private void selectionChangeTabEmp(Event event) {
-        if (tptInclusion.isSelected()) {
-            if (tipoPlanillaDto.getId() == null) {
-                new Mensaje().showModal(Alert.AlertType.ERROR, "Tipo planilla", getStage(), "Debe cargar el tipo de planilla al que desea agregar empleados.");
-                tPlanillas.getSelectionModel().select(tptTipoPlanilla);
-            }
-        }
     }
-
-    private void nuevoRegistro(ActionEvent event) {
-        if (tptInclusion.isSelected()) {
-            newEmpleado();
-        } else if (tptTipoPlanilla.isSelected()) {
-            if (new Mensaje().showConfirmation("Limpiar tipo planilla", getStage(), "¿Esta seguro que desea limpiar el registro?")) {
-                newPlanillaType();
-            }
-        }
-    }
-
 
     public void setTipoPlanilla(TipoPlanillaDto tipoPlanillaDto) {
         unbindTipoPlanilla();
@@ -447,9 +433,9 @@ public class TipoPlanillaViewController extends Controller implements Initializa
         bindTipoPlanilla(false);
         validarRequeridos();
     }
+
     @Override
     public void initialize() {
         // TODO Auto-generated method stub
     }
-
 }
