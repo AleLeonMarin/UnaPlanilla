@@ -47,7 +47,7 @@ public class LogInController  extends Controller implements Initializable {
 
     @FXML
     void onActionBtnIngresar(ActionEvent event) {
-<<<<<<< HEAD
+
         try {
             if (txfUser.getText() == null|| txfUser.getText().isBlank()) {
                 new Mensaje().showModal(Alert.AlertType.ERROR, "Validacion de  Usuario", getStage(), "Debe ingresar un usuario");
@@ -58,7 +58,7 @@ public class LogInController  extends Controller implements Initializable {
             }
         } catch (Exception ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, "Error al ingreso del Sistema", ex);
-=======
+
         if (txfUser.getText().isBlank())
         {
             new Mensaje().showModal(Alert.AlertType.ERROR, "Validacion Usuario", getStage(), "Es necesario digitar un usuario para ingresar al sistema");
@@ -69,7 +69,7 @@ public class LogInController  extends Controller implements Initializable {
         {
             EmpleadoService empleadoService = new EmpleadoService();
             Respuesta respuesta = empleadoService.getUsuario(txfUser.getText(), psfPassword.getText());
->>>>>>> dev
+
 
             if (respuesta.getEstado())
             {

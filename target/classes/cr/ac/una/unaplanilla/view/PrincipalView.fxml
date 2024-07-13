@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
+<<<<<<< HEAD
+=======
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+>>>>>>> dev
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<<<<<<< HEAD
 <BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="734.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.unaplanilla.controller.PrincipalController">
    <left>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
@@ -12,11 +20,48 @@
             <MFXButton onAction="#onActionBtnTiposPlanilla" text="Tipos planilla" />
             <MFXButton onAction="#onActionBtnEmpleados" text="Empleados" />
          </children></VBox>
+=======
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.unaplanilla.controller.PrincipalViewController">
+   <top>
+      <HBox alignment="CENTER_RIGHT" prefHeight="12.0" prefWidth="700.0" styleClass="jfx-contenedor-menu" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="jfx-titulo-label" text="Sistema UnaPlanilla" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+            <ImageView fitHeight="41.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../resources/Casa48.jpeg" />
+               </image>
+            </ImageView>
+         </children></HBox>
+   </top>
+   <left>
+      <VBox prefHeight="361.0" prefWidth="166.0" spacing="30.0" styleClass="jfx-contenedor-principal" BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane fx:id="lblName" prefHeight="89.0" prefWidth="138.0" styleClass="jfx-contenedor-principal">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/user.png" />
+                     </image>
+                  </ImageView>
+                  <Label layoutX="80.0" layoutY="14.0" text="Label" />
+                  <Label layoutX="80.0" layoutY="50.0" text="Label" />
+               </children>
+            </AnchorPane>
+            <MFXButton fx:id="btnEmpleados" buttonType="RAISED" maxWidth="1.7976931348623157E308" onAction="#onActionBtnEmpleados" prefHeight="70.0" prefWidth="166.0" styleClass="jfx-menuIngresar" text="Empleados" VBox.vgrow="ALWAYS" />
+            <MFXButton fx:id="btnTiposPlanilla" buttonType="RAISED" maxWidth="1.7976931348623157E308" onAction="#onActionBtnTiposPlanillas" prefHeight="70.0" prefWidth="166.0" styleClass="jfx-menuIngresar" text="Tipo Planilla" VBox.vgrow="ALWAYS" />
+            <MFXButton buttonType="RAISED" maxWidth="1.7976931348623157E308" prefHeight="70.0" styleClass="jfx-Salir" text="Cerrar Sesion" VBox.vgrow="ALWAYS" />
+            <MFXButton fx:id="btnSalir" buttonType="RAISED" maxWidth="1.7976931348623157E308" onAction="#onActionBtnSalir" prefHeight="70.0" styleClass="jfx-Salir" text="Salir" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+>>>>>>> dev
    </left>
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
    </center>
+<<<<<<< HEAD
    <top>
       <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </top>
+=======
+>>>>>>> dev
 </BorderPane>
