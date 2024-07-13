@@ -1,0 +1,16 @@
+version: '3.8'
+
+
+services:
+  oracle-db:
+    image: container-registry.oracle.com/database/express:lastest
+    container_name: oracle-planilla
+    ports:
+      - "1521:1521"
+    environment:
+       - ORACLE_SID=XE
+       - ORACLE_PDB=XEPDB1
+       - ORACLE_USER=una
+       - ORACLE_PASSWORD=una
+    volumes:
+      -./SrciptUnaPlanilla.sql:C:\Users\aletr\OneDrive\Documents\Universidad\SQLS\ScriptUnaPlanilla.sql

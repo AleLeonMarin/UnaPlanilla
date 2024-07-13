@@ -1,7 +1,10 @@
 package cr.ac.una.unaplanilla.controller;
 
+import cr.ac.una.unaplanilla.service.EmpleadoService;
+import cr.ac.una.unaplanilla.util.AppContext;
 import cr.ac.una.unaplanilla.util.FlowController;
 import cr.ac.una.unaplanilla.util.Mensaje;
+import cr.ac.una.unaplanilla.util.Respuesta;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -44,6 +47,7 @@ public class LogInController  extends Controller implements Initializable {
 
     @FXML
     void onActionBtnIngresar(ActionEvent event) {
+<<<<<<< HEAD
         try {
             if (txfUser.getText() == null|| txfUser.getText().isBlank()) {
                 new Mensaje().showModal(Alert.AlertType.ERROR, "Validacion de  Usuario", getStage(), "Debe ingresar un usuario");
@@ -54,7 +58,29 @@ public class LogInController  extends Controller implements Initializable {
             }
         } catch (Exception ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, "Error al ingreso del Sistema", ex);
+=======
+        if (txfUser.getText().isBlank())
+        {
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Validacion Usuario", getStage(), "Es necesario digitar un usuario para ingresar al sistema");
+        } else if (psfPassword.getText().isBlank())
+        {
+            new Mensaje().showModal(Alert.AlertType.ERROR, "Validacion Usuario", getStage(), "Es necesario digitar una clave para ingresar al sistema");
+        } else
+        {
+            EmpleadoService empleadoService = new EmpleadoService();
+            Respuesta respuesta = empleadoService.getUsuario(txfUser.getText(), psfPassword.getText());
+>>>>>>> dev
 
+            if (respuesta.getEstado())
+            {
+                AppContext.getInstance().set("Usuario", respuesta.getResultado("Usuario"));
+                FlowController.getInstance().goMain();
+                Stage stage = (Stage) this.root.getScene().getWindow();
+                stage.close();
+            } else
+            {
+                new Mensaje().showModal(Alert.AlertType.ERROR, "Validacion Usuario", getStage(), respuesta.getMensaje());
+            }
         }
     }
     @FXML

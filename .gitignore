@@ -1,0 +1,16 @@
+#Directories
+
+.idea/
+.vscode/
+target/
+
+#Other files
+
+nbactions.xml
+dependency-reduced-pom.xml
+unaplanilla.iml
+
+#Binary files
+
+*.class
+*.jar
